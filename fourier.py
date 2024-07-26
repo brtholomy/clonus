@@ -11,9 +11,6 @@ from audioflux.utils import power_to_db
 from audioflux.display import fill_spec
 
 
-PINKPATH = './samps/pink.wav'
-
-
 def GetBFT(path):
     audio_arr, sr = af.read(path)
     # num : num of frequency bins, meaning a FFT is performed for that f envelope
