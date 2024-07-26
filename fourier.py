@@ -42,7 +42,12 @@ def PlotSpectrogram(obj, audio_arr, spec_dB_arr):
 def ShortTimeFourierTransform(path):
     obj, audio_arr = GetBFT(path)
     spec_dB_arr = GetDbSpectrogram(obj, audio_arr)
+    return obj, audio_arr, spec_dB_arr
+
+def main():
+    path = './samps/pink.wav'
+    obj, audio_arr, spec_dB_arr = ShortTimeFourierTransform(path)
     PlotSpectrogram(obj, audio_arr, spec_dB_arr)
 
-path = './samps/pink.wav'
-ShortTimeFourierTransform(path)
+if __name__ == "__main__":
+    main()
