@@ -47,12 +47,12 @@ def ShortTimeFourierTransform(path):
     spec_dB_arr = GetDbSpectrogram(obj, audio_arr)
     return obj, audio_arr, spec_dB_arr
 
-def CompareToPink(path):
-    pink_obj, pink_audio_arr, pink_spec_dB_arr = ShortTimeFourierTransform(PINKPATH)
+def Compare(path, compare_path):
+    ref_obj, ref_audio_arr, ref_spec_dB_arr = ShortTimeFourierTransform(compare_path)
     obj, audio_arr, spec_dB_arr = ShortTimeFourierTransform(path)
     # change length so that we can simply diff the two
-    spec_dB_arr_fitted = np.resize(spec_dB_arr, pink_spec_dB_arr.shape)
-    diff = pink_spec_dB_arr - spec_dB_arr_fitted
+    spec_dB_arr_fitted = np.resize(spec_dB_arr, ref_spec_dB_arr.shape)
+    diff = ref_spec_dB_arr - spec_dB_arr_fitted
     print(f'{diff.shape = }')
     # TODO: this isn't the right graph:
     plt.plot(diff)
@@ -76,7 +76,7 @@ def main(file_path, compare_to_pink):
     obj, audio_arr, spec_dB_arr = ShortTimeFourierTransform(file_path)
     PlotSpectrogram(obj, audio_arr, spec_dB_arr)
     if compare_to_pink:
-        CompareToPink(file_path)
+        Compare(file_path, './samps/pink.wav')
 
 if __name__ == "__main__":
     main()
