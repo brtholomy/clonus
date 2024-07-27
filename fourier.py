@@ -38,7 +38,7 @@ def PlotSpectrogram(obj, audio_arr, spec_dB_arr, title):
                     x_coords=obj.x_coords(audio_len),
                     y_coords=obj.y_coords(),
                     x_axis='time', y_axis='log',
-                    title='BFT-Linear Spectrogram of %s' % title)
+                    title='dB spectrogram: %s' % title)
     fig.colorbar(img, ax=ax, format="%+2.0f dB")
     viz.PlotShow()
 
@@ -57,7 +57,7 @@ def Compare(path, compare_path):
     spec_diff = ref_spec_dB_arr - spec_dB_arr_fitted
     audio_diff = ref_audio_arr - audio_arr_fitted
     # can reuse this obj because it's just a specification:
-    PlotSpectrogram(obj, audio_diff, spec_diff, 'diff')
+    PlotSpectrogram(obj, audio_diff, spec_diff, 'diff of %s and %s' % (path, compare_path))
 
 @click.command()
 @click.option(
@@ -68,15 +68,15 @@ def Compare(path, compare_path):
     help='wav file to analyze'
 )
 @click.option(
-    '--compare_to_pink', '-c',
+    '--diff_pink', '-d',
     is_flag=True,
     default=False,
     help='generate a diff plot against pink noise reference'
 )
-def main(file_path, compare_to_pink):
+def main(file_path, diff_pink):
     obj, audio_arr, spec_dB_arr = ShortTimeFourierTransform(file_path)
     PlotSpectrogram(obj, audio_arr, spec_dB_arr, file_path)
-    if compare_to_pink:
+    if diff_pink:
         Compare(file_path, './samps/pink.wav')
 
 if __name__ == "__main__":
