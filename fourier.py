@@ -30,7 +30,7 @@ def GetDbSpectrogram(obj, audio_arr):
     spec_dB_arr = power_to_db(spec_arr)
     return spec_dB_arr
 
-def PlotSpectrogram(obj, audio_arr, spec_dB_arr):
+def PlotSpectrogram(obj, audio_arr, spec_dB_arr, title):
     # Show spectrogram plot
     audio_len = audio_arr.shape[-1]
     fig, ax = plt.subplots()
@@ -38,7 +38,7 @@ def PlotSpectrogram(obj, audio_arr, spec_dB_arr):
                     x_coords=obj.x_coords(audio_len),
                     y_coords=obj.y_coords(),
                     x_axis='time', y_axis='log',
-                    title='BFT-Linear Spectrogram')
+                    title='BFT-Linear Spectrogram of %s' % title)
     fig.colorbar(img, ax=ax, format="%+2.0f dB")
     viz.PlotShow()
 
@@ -50,13 +50,14 @@ def ShortTimeFourierTransform(path):
 def Compare(path, compare_path):
     ref_obj, ref_audio_arr, ref_spec_dB_arr = ShortTimeFourierTransform(compare_path)
     obj, audio_arr, spec_dB_arr = ShortTimeFourierTransform(path)
-    # change length so that we can simply diff the two
+
+    # change length of input sample so that we can simply diff the two
     spec_dB_arr_fitted = np.resize(spec_dB_arr, ref_spec_dB_arr.shape)
-    diff = ref_spec_dB_arr - spec_dB_arr_fitted
-    print(f'{diff.shape = }')
-    # TODO: this isn't the right graph:
-    plt.plot(diff)
-    viz.PlotShow()
+    audio_arr_fitted = np.resize(audio_arr, ref_audio_arr.shape)
+    spec_diff = ref_spec_dB_arr - spec_dB_arr_fitted
+    audio_diff = ref_audio_arr - audio_arr_fitted
+    # can reuse this obj because it's just a specification:
+    PlotSpectrogram(obj, audio_diff, spec_diff, 'diff')
 
 @click.command()
 @click.option(
@@ -74,7 +75,7 @@ def Compare(path, compare_path):
 )
 def main(file_path, compare_to_pink):
     obj, audio_arr, spec_dB_arr = ShortTimeFourierTransform(file_path)
-    PlotSpectrogram(obj, audio_arr, spec_dB_arr)
+    PlotSpectrogram(obj, audio_arr, spec_dB_arr, file_path)
     if compare_to_pink:
         Compare(file_path, './samps/pink.wav')
 
