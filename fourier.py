@@ -23,16 +23,20 @@ def CalculateNumberFrequencyBins(two_exp):
     # matching 2*12:
     return (2**(two_exp - 1)) + 1
 
+def CalculateSlideLength(two_exp):
+    # NOTE: similarly matching their default of fft_length / 4:
+    return 2**(two_exp - 2)
+
 def GetBFT(path):
     audio_arr, sr = af.read(path)
-
     # num : num of frequency bins, meaning a FFT is performed for that f envelope
     # radix2_exp : fft_length=2**radix2_exp : default 2^12 = 4096
     # slide_length : data sampling size, by default = fft_length / 4
     two_exp = CalculateFFTLengthExp(audio_arr)
     num_f = CalculateNumberFrequencyBins(two_exp)
+    slide_length = CalculateSlideLength(two_exp)
     obj = af.BFT(num=num_f, radix2_exp=two_exp, samplate=sr, low_fre=0., high_fre=20_000.,
-                 window_type=WindowType.HANN, slide_length=1024,
+                 window_type=WindowType.HANN, slide_length=slide_length,
                  scale_type=SpectralFilterBankScaleType.LINEAR,
                  style_type=SpectralFilterBankStyleType.SLANEY,
                  data_type=SpectralDataType.POWER)
